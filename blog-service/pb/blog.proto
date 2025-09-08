@@ -1,0 +1,44 @@
+syntax="proto3";
+
+package blog_service;
+
+option go_package="./pb";
+
+
+service Blog_Service{
+    rpc CreateBlog (CreateBlogRequest) returns (BlogResponse);
+    rpc GetBlog(GetBlogRequest) returns(BlogResponse);
+    rpc UpdateBlog(UpdateBlogRequest) returns (BlogResponse);
+    rpc DeleteBlog(DeleteBlogRequest) returns(MessageResponse);
+}
+
+message CreateBlogRequest{
+    string title=1;
+    string description=2;
+    string author_id=3;
+}
+
+message GetBlogRequest{
+    string id=1;
+}
+
+message UpdateBlogRequest{
+    string  title=1;
+    string description=2;
+}
+
+message DeleteBlogRequest{
+    string id =1;
+}
+
+message BlogResponse{
+    string id =1;
+    string title=2;
+    string description=3;
+    string author_id=4;
+    string message =5;
+}
+
+message MessageResponse{
+    string message =1;
+}
