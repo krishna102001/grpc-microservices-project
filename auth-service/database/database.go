@@ -25,5 +25,6 @@ func Connect() {
 	if err != nil {
 		logger.Fatalf("Failed to connect the database %v", err)
 	}
+	logger.Info("Database is connected Successfully")
 	DB = db
 }

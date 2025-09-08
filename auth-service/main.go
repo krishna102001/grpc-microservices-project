@@ -6,6 +6,7 @@ import (
 
 	logger "github.com/charmbracelet/log"
 	"github.com/joho/godotenv"
+	"github.com/krishna102001/grpc-microservices-project/auth-service/database"
 	"github.com/krishna102001/grpc-microservices-project/auth-service/pb"
 	"github.com/krishna102001/grpc-microservices-project/auth-service/services"
 	"google.golang.org/grpc"
@@ -15,6 +16,7 @@ func init() {
 	if err := godotenv.Load(); err != nil {
 		logger.Error("Failed to load the env file")
 	}
+	database.Connect()
 }
 
 func main() {
