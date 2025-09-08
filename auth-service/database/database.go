@@ -36,4 +36,5 @@ func migrate() {
 	if err := DB.AutoMigrate(&models.User{}); err != nil {
 		logger.Fatal("Failed to migrate the model")
 	}
+	logger.Info("Database is Successfully Migrated")
 }
