@@ -5,6 +5,7 @@ import (
 	"os"
 
 	logger "github.com/charmbracelet/log"
+	"github.com/krishna102001/grpc-microservices-project/auth-service/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -27,4 +28,12 @@ func Connect() {
 	}
 	logger.Info("Database is connected Successfully")
 	DB = db
+
+	migrate()
+}
+
+func migrate() {
+	if err := DB.AutoMigrate(&models.User{}); err != nil {
+		logger.Fatal("Failed to migrate the model")
+	}
 }
