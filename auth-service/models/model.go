@@ -7,9 +7,9 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"primaryKey"`
+	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	Name      string    `gorm:"not null"`
-	Email     string    `gorm:"uniqueIndex;not null"`
+	Email     string    `gorm:"uniqueIndex;not null;unique"`
 	Password  string    `gorm:"not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time

@@ -29,5 +29,5 @@ func GenerateToken(email string) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 
-	return token.SignedString(jwtKey)
+	return token.SignedString([]byte(jwtKey))
 }
