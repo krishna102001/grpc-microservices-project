@@ -7,7 +7,7 @@ option go_package="./pb";
 
 service Blog_Service{
     rpc CreateBlog (CreateBlogRequest) returns (BlogResponse);
-    rpc GetBlog(GetBlogRequest) returns(BlogResponse);
+    rpc GetBlog(GetBlogRequest) returns(BlogListResponse);
     rpc UpdateBlog(UpdateBlogRequest) returns (BlogResponse);
     rpc DeleteBlog(DeleteBlogRequest) returns(MessageResponse);
 }
@@ -37,6 +37,10 @@ message BlogResponse{
     string description=3;
     string author_id=4;
     string message =5;
+}
+
+message BlogListResponse{
+    repeated BlogResponse blogs =1;
 }
 
 message MessageResponse{
