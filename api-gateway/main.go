@@ -18,8 +18,8 @@ func main() {
 
 	r := gin.Default()
 
-	authHandler := handlers.NewAuthHandler("localhost:9000")
-	blogHandler := handlers.NewBlogHandler("localhost:9001")
+	authHandler := handlers.NewAuthHandler("auth-service:9000")
+	blogHandler := handlers.NewBlogHandler("blog-service:9001")
 
 	r.POST("/signup", authHandler.Signup)
 	r.POST("/login", authHandler.Login)
