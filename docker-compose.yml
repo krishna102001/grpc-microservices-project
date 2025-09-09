@@ -1,0 +1,92 @@
+services:
+  #---------------------
+  # Auth Service
+  #---------------------
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "9000:9000"
+    env_file:
+      - ./auth-service/.env
+    depends_on:
+      - auth-db
+    networks:
+      - backend
+  #------------------
+  # Blog Service
+  #------------------
+  blog-service:
+    build:
+      context: ./blog-service
+      dockerfile: Dockerfile
+    container_name: blog-service
+    ports:
+      - "9001:9001"
+    env_file:
+      - ./blog-service/.env
+    depends_on:
+      - blog-db
+    networks:
+      - backend
+  #-----------------
+  # API Gateway
+  #-----------------
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./api-gateway/.env
+    depends_on:
+      - auth-service
+      - blog-service
+    networks:
+      - backend
+    #-----------------------
+    # PostgreSQL For Auth DB
+    #-----------------------
+  auth-db:
+    image: postgres:16.9
+    container_name: auth_db
+    restart: always
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_password
+      POSTGRES_DB: auth_db
+    ports:
+      - "15432:5432"
+    volumes:
+      - auth_pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+    #-----------------------------
+    # PostgreSQL For Blog DB
+    #-----------------------------
+  blog-db:
+    image: postgres:16.9
+    container_name: blog_db
+    restart: always
+    environment:
+      POSTGRES_USER: blog_user
+      POSTGRES_PASSWORD: blog_password
+      POSTGRES_DB: blog_db
+    ports:
+      - "25432:5432"
+    volumes:
+      - blog_pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  auth_pgdata:
+  blog_pgdata:
+
+networks:
+  backend:
+    driver: bridge
