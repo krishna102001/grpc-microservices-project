@@ -52,7 +52,7 @@ func (srv *BlogServer) GetBlog(ctx context.Context, req *pb.GetBlogRequest) (*pb
 
 func (srv *BlogServer) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest) (*pb.BlogResponse, error) {
 	var existingBlog model.Blog
-	if err := database.DB.Where("id = ? AND author_id = ?", req.Id, ctx.Value("user_id")).First(&existingBlog).Error; err != nil {
+	if err := database.DB.Where("id = ? AND author_id = ?", req.Id, ctx.Value("email")).First(&existingBlog).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("blog not found or you are not authorized to update it")
 		}
@@ -66,7 +66,7 @@ func (srv *BlogServer) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest
 	if req.Description != "" {
 		updateData["Description"] = req.Description
 	}
-	if err := database.DB.Where("id = ? AND author_id = ?", req.Id, ctx.Value("user_id")).Updates(updateData).Error; err != nil {
+	if err := database.DB.Where("id = ? AND author_id = ?", req.Id, ctx.Value("email")).Updates(updateData).Error; err != nil {
 		return nil, fmt.Errorf("blog service internal server error %v", err.Error())
 	}
 
@@ -85,7 +85,7 @@ func (srv *BlogServer) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest
 func (srv *BlogServer) DeleteBlog(ctx context.Context, req *pb.DeleteBlogRequest) (*pb.MessageResponse, error) {
 
 	var existingBlog model.Blog
-	if err := database.DB.Where("id =? AND author_id = ?", req.Id, ctx.Value("user_id")).First(&existingBlog).Error; err != nil {
+	if err := database.DB.Where("id =? AND author_id = ?", req.Id, ctx.Value("email")).First(&existingBlog).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("blog not found or you are not authorised to delete the data")
 		}
