@@ -1,13 +1,16 @@
 package handlers
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/krishna102001/grpc-microservices-project/api-gateway/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 type BlogHandler struct {
@@ -44,10 +47,9 @@ func (h *BlogHandler) CreateBlog(c *gin.Context) {
 
 func (h *BlogHandler) GetBlog(c *gin.Context) {
 	var req pb.GetBlogRequest
-	if err := c.ShouldBindBodyWithJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input or author_id"})
-		return
-	}
+
+	id, _ := c.Get("email")
+	req.Id = id.(string)
 	// ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	// defer cancel()
 
@@ -56,9 +58,7 @@ func (h *BlogHandler) GetBlog(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "blog service internal error"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"blogs": res,
-	})
+	c.JSON(http.StatusOK, res)
 }
 
 func (h *BlogHandler) UpdateBlog(c *gin.Context) {
@@ -67,12 +67,24 @@ func (h *BlogHandler) UpdateBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input or author_id"})
 		return
 	}
-	// ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	// defer cancel()
+	id, exists := c.Get("email")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized: email missing in context"})
+		return
+	}
+	email, ok := id.(string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized: invalid email format"})
+		return
+	}
+	log.Println("email-----------------------------", email)
 
-	res, err := h.blogClient.UpdateBlog(c, &req)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	res, err := h.blogClient.UpdateBlog(metadata.AppendToOutgoingContext(ctx, "email", email), &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "blog service internal error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "blog service internal error" + err.Error()})
 		return
 	}
 	c.JSON(http.StatusAccepted, gin.H{"blog": res})
@@ -84,9 +96,13 @@ func (h *BlogHandler) DeleteBlog(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input or author_id"})
 		return
 	}
-	// ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	// defer cancel()
-	res, err := h.blogClient.DeleteBlog(c, &req)
+
+	id, _ := c.Get("email")
+	email := id.(string)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	res, err := h.blogClient.DeleteBlog(metadata.AppendToOutgoingContext(ctx, "email", email), &req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "blog service internal error"})
 		return

@@ -4,10 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/krishna102001/grpc-microservices-project/blog-service/database"
 	"github.com/krishna102001/grpc-microservices-project/blog-service/model"
 	"github.com/krishna102001/grpc-microservices-project/blog-service/pb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 )
 
@@ -51,8 +55,21 @@ func (srv *BlogServer) GetBlog(ctx context.Context, req *pb.GetBlogRequest) (*pb
 }
 
 func (srv *BlogServer) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest) (*pb.BlogResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Error(codes.Unauthenticated, "missing metadata")
+	}
+
+	emailList := md.Get("email")
+	if len(emailList) == 0 {
+		log.Println("unauthorized: missing user ID in metadata")
+		return nil, status.Error(codes.Unauthenticated, "unauthorized: missing user ID in metadata")
+	}
+
+	userID := emailList[0]
+
 	var existingBlog model.Blog
-	if err := database.DB.Where("id = ? AND author_id = ?", req.Id, ctx.Value("email")).First(&existingBlog).Error; err != nil {
+	if err := database.DB.Where("id = ? AND author_id = ?", req.Id, userID).First(&existingBlog).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("blog not found or you are not authorized to update it")
 		}
@@ -66,7 +83,7 @@ func (srv *BlogServer) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest
 	if req.Description != "" {
 		updateData["Description"] = req.Description
 	}
-	if err := database.DB.Where("id = ? AND author_id = ?", req.Id, ctx.Value("email")).Updates(updateData).Error; err != nil {
+	if err := database.DB.Model(&model.Blog{}).Where("id = ? AND author_id = ?", req.Id, userID).Updates(updateData).Error; err != nil {
 		return nil, fmt.Errorf("blog service internal server error %v", err.Error())
 	}
 
@@ -84,8 +101,18 @@ func (srv *BlogServer) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest
 
 func (srv *BlogServer) DeleteBlog(ctx context.Context, req *pb.DeleteBlogRequest) (*pb.MessageResponse, error) {
 
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Error(codes.Unauthenticated, "missing metadata")
+	}
+
+	emailList := md.Get("email")
+	if len(emailList) == 0 {
+		return nil, status.Error(codes.NotFound, "user id not found")
+	}
+	userId := emailList[0]
 	var existingBlog model.Blog
-	if err := database.DB.Where("id =? AND author_id = ?", req.Id, ctx.Value("email")).First(&existingBlog).Error; err != nil {
+	if err := database.DB.Where("id =? AND author_id = ?", req.Id, userId).First(&existingBlog).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("blog not found or you are not authorised to delete the data")
 		}

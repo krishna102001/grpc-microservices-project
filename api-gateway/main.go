@@ -28,8 +28,8 @@ func main() {
 	{
 		blogRoutes.POST("/", blogHandler.CreateBlog)
 		blogRoutes.GET("/", blogHandler.GetBlog)
-		blogRoutes.PATCH("/:id", blogHandler.UpdateBlog)
-		blogRoutes.DELETE("/:id", blogHandler.DeleteBlog)
+		blogRoutes.PUT("/update", blogHandler.UpdateBlog)
+		blogRoutes.DELETE("/", blogHandler.DeleteBlog)
 	}
 
 	if err := r.Run(":8080"); err != nil {
