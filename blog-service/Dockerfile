@@ -14,14 +14,18 @@ COPY . .
 
 RUN go build -o blog-service main.go 
 
-FROM alpine:latest
-
-# RUN apk --no-cache add ca-certificates
-
-WORKDIR /root/
-
-COPY --from=build-stage /app/blog-service .
-
 EXPOSE 9001
 
 CMD [ "./blog-service" ]
+
+# FROM alpine:latest
+
+# # RUN apk --no-cache add ca-certificates
+
+# WORKDIR /root/
+
+# COPY --from=build-stage /app/blog-service .
+
+# EXPOSE 9001
+
+# CMD [ "./blog-service" ]

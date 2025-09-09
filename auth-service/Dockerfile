@@ -14,12 +14,16 @@ COPY . .
 
 RUN go build -o auth-service main.go
 
-FROM alpine:latest
-
-WORKDIR /root/
-
-COPY --from=build-stage /app/auth-service .
-
 EXPOSE 9000
 
 CMD [ "./auth-service" ]
+
+# FROM alpine:latest
+
+# WORKDIR /root/
+
+# COPY --from=build-stage /app/auth-service .
+
+# EXPOSE 9000
+
+# CMD [ "./auth-service" ]
