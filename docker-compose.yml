@@ -50,6 +50,11 @@ services:
       - blog-service
     networks:
       - backend
+  kafka:
+    image: apache/kafka
+    restart: always
+    ports:
+      - "9092:9092"
     #-----------------------
     # PostgreSQL For Auth DB
     #-----------------------
