@@ -50,6 +50,26 @@ services:
       - blog-service
     networks:
       - backend
+  #----------------------
+  # Notification Service
+  #----------------------
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    ports:
+      - "9002:9002"
+    env_file:
+      - ./notification-service/.env
+    depends_on:
+      - auth-service
+      - blog-service
+    networks:
+      - backend
+  #----------------------------
+  # Kafka (async communication)
+  #----------------------------
   kafka:
     image: apache/kafka
     restart: always
