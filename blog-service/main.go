@@ -5,7 +5,6 @@ import (
 	"net"
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/krishna102001/grpc-microservices-project/blog-service/database"
 	"github.com/krishna102001/grpc-microservices-project/blog-service/pb"
 	"github.com/krishna102001/grpc-microservices-project/blog-service/service"
@@ -13,9 +12,9 @@ import (
 )
 
 func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Failed to load the env file")
-	}
+	// if err := godotenv.Load(); err != nil {
+	// 	log.Fatalf("Failed to load the env file")
+	// }
 	database.Connect()
 }
 
