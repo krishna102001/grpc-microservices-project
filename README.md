@@ -22,6 +22,8 @@ This is blog microservices project which was created to learn `Kafka` use.
 
 - [x] Authentication
 - [x] CRUD Operation
+- [x] SMS Service
+- [x] Email Service
 - [ ] Retry Mechanism of notification services
 - [ ] Upload of Images
 
