@@ -12,6 +12,7 @@ import (
 	"github.com/IBM/sarama"
 
 	mailservice "github.com/krishna102001/grpc-microservices-project/notification-service/mail-service"
+	smsservice "github.com/krishna102001/grpc-microservices-project/notification-service/sms-service"
 	typesdata "github.com/krishna102001/grpc-microservices-project/notification-service/types-data"
 )
 
@@ -85,6 +86,9 @@ func sendMessage(msg *sarama.ConsumerMessage) {
 		}
 	case "sms":
 		log.Printf("sms service called")
+		if err := smsservice.SendSMS("+916388851459", data.MessageContent.Content); err != nil {
+			log.Println("Failed to send the sms")
+		}
 	default:
 		log.Printf("invalid service type please check")
 	}
