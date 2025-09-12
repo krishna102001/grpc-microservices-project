@@ -16,6 +16,7 @@ This is blog microservices project which was created to learn `Kafka` use.
 - Kafka
 - gRPC
 - docker
+- Makefile
 
 ### Future Features
 
