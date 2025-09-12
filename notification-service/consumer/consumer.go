@@ -77,7 +77,12 @@ func sendMessage(msg *sarama.ConsumerMessage) {
 	switch data.ServiceType {
 	case "email":
 		log.Printf("email service called")
-		mailservice.SendMail([]string{data.MessageContent.RecieverEmail}, data)
+		if err := mailservice.SendMail([]string{data.MessageContent.RecieverEmail}, data); err != nil {
+			log.Println("Planning to template the retry mechanism save in database")
+			//  save to email database
+			// run for loop forever and check every second if any email is in db
+			// if have then capture that email and send the mail again if succeed then delete it from the table
+		}
 	case "sms":
 		log.Printf("sms service called")
 	default:
