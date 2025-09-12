@@ -1,6 +1,7 @@
 package consumer
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -9,6 +10,9 @@ import (
 	"syscall"
 
 	"github.com/IBM/sarama"
+
+	mailservice "github.com/krishna102001/grpc-microservices-project/notification-service/mail-service"
+	typesdata "github.com/krishna102001/grpc-microservices-project/notification-service/types-data"
 )
 
 var kafka_client sarama.Consumer
@@ -64,5 +68,19 @@ func consume_parition(topic string, wg *sync.WaitGroup) {
 
 func sendMessage(msg *sarama.ConsumerMessage) {
 	fmt.Printf("Recieved the message from topics(%s) | paritions(%v) | Time(%v) \n", msg.Topic, msg.Partition, msg.Timestamp)
-	fmt.Println("message are ", string(msg.Value))
+	// fmt.Println("message are ", string(msg.Value))
+	var data typesdata.KafkaMessage
+	if err := json.Unmarshal(msg.Value, &data); err != nil {
+		log.Fatalf("Failed to unmarshal the json %v", err)
+	}
+	fmt.Printf("data service-type(%s) | message-type(%s) | message-content(%s)\n", data.ServiceType, data.MessageType, data.MessageContent)
+	switch data.ServiceType {
+	case "email":
+		log.Printf("email service called")
+		mailservice.SendMail([]string{data.MessageContent.RecieverEmail}, data)
+	case "sms":
+		log.Printf("sms service called")
+	default:
+		log.Printf("invalid service type please check")
+	}
 }

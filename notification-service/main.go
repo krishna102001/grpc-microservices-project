@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/joho/godotenv"
-	"github.com/krishna102001/gtpc-microservices-project/notification-service/consumer"
+	"github.com/krishna102001/grpc-microservices-project/notification-service/consumer"
 )
 
 func init() {

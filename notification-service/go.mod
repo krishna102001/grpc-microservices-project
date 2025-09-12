@@ -1,4 +1,4 @@
-module github.com/krishna102001/gtpc-microservices-project/notification-service
+module github.com/krishna102001/grpc-microservices-project/notification-service
 
 go 1.24.0
 
