@@ -20,10 +20,15 @@ type AuthServer struct {
 	pb.UnimplementedAuth_ServiceServer
 }
 
-type kafkaMessage struct {
-	ServiceType    string `json:"service_type"`
-	MessageType    string `json:"message_type"`
-	MessageContent string `json:"MessageContent"`
+type KafkaMessage struct {
+	ServiceType    string         `json:"service_type"`
+	MessageType    string         `json:"message_type"`
+	MessageContent messageContent `json:"message_content"`
+}
+
+type messageContent struct {
+	RecieverEmail string `json:"reciever_email"`
+	Content       string `json:"content"`
 }
 
 func (srv *AuthServer) Signup(ctx context.Context, req *pb.SignupRequest) (*pb.AuthResponse, error) {
@@ -52,10 +57,13 @@ func (srv *AuthServer) Signup(ctx context.Context, req *pb.SignupRequest) (*pb.A
 		log.Printf("------------------ failed to get the topic name-----------------")
 	}
 
-	kf := &kafkaMessage{
-		ServiceType:    "email",
-		MessageType:    "register",
-		MessageContent: "You have Register Successfully",
+	kf := &KafkaMessage{
+		ServiceType: "email",
+		MessageType: "register",
+		MessageContent: messageContent{
+			RecieverEmail: req.Email,
+			Content:       "You have Register Successfully",
+		},
 	}
 
 	msg, err := json.Marshal(kf)
@@ -93,10 +101,13 @@ func (srv *AuthServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Aut
 		log.Printf("------------------ failed to get the topic name-----------------")
 	}
 
-	kf := &kafkaMessage{
-		ServiceType:    "email",
-		MessageType:    "login",
-		MessageContent: "You have Login Successfully",
+	kf := &KafkaMessage{
+		ServiceType: "email",
+		MessageType: "login",
+		MessageContent: messageContent{
+			RecieverEmail: req.Email,
+			Content:       "You have Login Successfully",
+		},
 	}
 
 	msg, err := json.Marshal(kf)
@@ -118,10 +129,13 @@ func (srv *AuthServer) ForgetPassword(ctx context.Context, req *pb.ForgetPasswor
 		log.Printf("------------------ failed to get the topic name-----------------")
 	}
 
-	kf := &kafkaMessage{
-		ServiceType:    "sms",
-		MessageType:    "forget",
-		MessageContent: "5432",
+	kf := &KafkaMessage{
+		ServiceType: "sms",
+		MessageType: "forget",
+		MessageContent: messageContent{
+			RecieverEmail: req.Email,
+			Content:       "5432",
+		},
 	}
 
 	msg, err := json.Marshal(kf)

@@ -22,10 +22,15 @@ type BlogServer struct {
 	pb.UnimplementedBlog_ServiceServer
 }
 
-type kafkaMessage struct {
-	ServiceType    string `json:"service_type"`
-	MessageType    string `json:"message_type"`
-	MessageContent string `json:"MessageContent"`
+type KafkaMessage struct {
+	ServiceType    string         `json:"service_type"`
+	MessageType    string         `json:"message_type"`
+	MessageContent messageContent `json:"message_content"`
+}
+
+type messageContent struct {
+	RecieverEmail string `json:"reciever_email"`
+	Content       string `json:"content"`
 }
 
 func (srv *BlogServer) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest) (*pb.BlogResponse, error) {
@@ -41,10 +46,13 @@ func (srv *BlogServer) CreateBlog(ctx context.Context, req *pb.CreateBlogRequest
 		log.Printf("------------------ failed to get the topic name-----------------")
 	}
 
-	kf := &kafkaMessage{
-		ServiceType:    "email",
-		MessageType:    "create_blog",
-		MessageContent: "You have Successfully created blog",
+	kf := &KafkaMessage{
+		ServiceType: "email",
+		MessageType: "create_blog",
+		MessageContent: messageContent{
+			RecieverEmail: req.AuthorId,
+			Content:       "You have Successfully created blog",
+		},
 	}
 
 	msg, err := json.Marshal(kf)
@@ -127,10 +135,13 @@ func (srv *BlogServer) UpdateBlog(ctx context.Context, req *pb.UpdateBlogRequest
 		log.Printf("------------------ failed to get the topic name-----------------")
 	}
 
-	kf := &kafkaMessage{
-		ServiceType:    "email",
-		MessageType:    "update_blog",
-		MessageContent: "You have Successfully updated blog",
+	kf := &KafkaMessage{
+		ServiceType: "email",
+		MessageType: "update_blog",
+		MessageContent: messageContent{
+			RecieverEmail: userID,
+			Content:       "You have Successfully updated blog",
+		},
 	}
 
 	msg, err := json.Marshal(kf)
@@ -180,10 +191,13 @@ func (srv *BlogServer) DeleteBlog(ctx context.Context, req *pb.DeleteBlogRequest
 		log.Printf("------------------ failed to get the topic name-----------------")
 	}
 
-	kf := &kafkaMessage{
-		ServiceType:    "email",
-		MessageType:    "delete_blog",
-		MessageContent: "You have Successfully deleted blog",
+	kf := &KafkaMessage{
+		ServiceType: "email",
+		MessageType: "delete_blog",
+		MessageContent: messageContent{
+			RecieverEmail: userId,
+			Content:       "You have Successfully deleted blog",
+		},
 	}
 
 	msg, err := json.Marshal(kf)
