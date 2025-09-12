@@ -2,17 +2,16 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/krishna102001/grpc-microservices-project/api-gateway/handlers"
 	"github.com/krishna102001/grpc-microservices-project/api-gateway/log"
 	"github.com/krishna102001/grpc-microservices-project/api-gateway/middlewares"
 )
 
-func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Failed to load the env file")
-	}
-}
+// func init() {
+// 	if err := godotenv.Load(); err != nil {
+// 		log.Fatal("Failed to load the env file")
+// 	}
+// }
 
 func main() {
 
@@ -23,6 +22,7 @@ func main() {
 
 	r.POST("/signup", authHandler.Signup)
 	r.POST("/login", authHandler.Login)
+	r.POST("/forget-password", authHandler.ForgetPassword)
 
 	blogRoutes := r.Group("/blog", middlewares.AuthHandler())
 	{
