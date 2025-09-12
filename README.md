@@ -15,18 +15,23 @@ This is blog microservices project which was created to learn `Kafka` use.
 - PostgreSQL
 - Kafka
 - gRPC
+- docker
 
 ### Future Features
 
-[x] Authentication
-[x] CRUD Operation
-[] Retry Mechanism of notification services
-[] Upload of Images
+- [x] Authentication
+- [x] CRUD Operation
+- [] Retry Mechanism of notification services
+- [] Upload of Images
 
 ### Steps To Run The Project
 
 1. Clone the project
-   `git clone https://github.com/krishna102001/grpc-microservices-project.git`
+   ```bash
+    git clone https://github.com/krishna102001/grpc-microservices-project.git
+   ```
 2. Create `.env` file in each services
 3. Run the docker command
-   `docker compose up`
+   ```bash
+    docker compose up
+   ```
